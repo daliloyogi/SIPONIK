@@ -38,3 +38,9 @@ void MainDisplay() {
   lcd.setCursor(0, 3); lcd.print(Nutrisi);
   lcd.setCursor(5, 3); lcd.print("PPM");
 }
+
+void SelenoidOnDisplay() {
+  lcd.clear();
+  lcd.setCursor(0, 0); lcd.print("Volume Air Rendah!");
+  lcd.setCursor(0, 1); lcd.print("Selenoid On!");
+}

@@ -6,8 +6,8 @@
 #include <LiquidCrystal_I2C.h>
 
 // UART1 ESP32
-#define UART1_TX 17 
-#define UART1_RX 16  
+#define UART1_TX 17
+#define UART1_RX 16
 
 // AlOKASI PIN
 #define PH_PIN 34
@@ -15,6 +15,7 @@
 #define DS18B2_PIN 33
 #define TRIG_PIN 25
 #define ECHO_PIN 26
+#define SELENOID 23
 
 #define SOUND_SPEED 0.034
 
@@ -28,7 +29,7 @@ float tdsVoltage = 0, Nutrisi = 0;
 long duration;
 float KetinggianAir, distanceCm;
 float SuhuAir = 0.0;
-float  depthCm = 100.0; // Ganti dengan kedalaman kolam (cm)
+float depthCm = 100.0;  // Ganti dengan kedalaman kolam (cm)
 
 /*
 variabel Sensor :
@@ -70,6 +71,8 @@ void setup() {
   sensors.begin();
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, OUTPUT);
+  pinMode(SELENOID, OUTPUT);
+  digitalWrite(SELENOID, LOW);
 
   IntroDisplay();
 }
@@ -79,10 +82,15 @@ void loop() {
   if (millis() - timepoint > 1000U) {
     timepoint = millis();
 
-    ultrasonic();     // Data Ketinggian Air (%)
-    dallas();         // Data Suhu Air (Celcius)
-    TDS();            // Data Nutrisi (ppm)
-    PH();             // Data Index PH
+    ultrasonic();  // Data Ketinggian Air (%)
+    dallas();      // Data Suhu Air (Celcius)
+    TDS();         // Data Nutrisi (ppm)
+    PH();          // Data Index PH
+
+    if (KetinggianAir <= 70) {
+      digitalWrite(SELENOID, LOW);
+      SelenoidOnDisplay();
+    }
 
     // Format as comma-separated string (CSV)
     String data = String(pH, 1) + "," + String(Nutrisi) + "," + String(KetinggianAir) + "," + String(SuhuAir, 1);
