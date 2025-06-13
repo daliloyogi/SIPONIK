@@ -30,6 +30,12 @@ unsigned long prevT, currT, interval = 5000;
 //Flag untuk mengetahui konektivitas dari firebase apakah terhubung atau tidak
 bool firebaseInitialized = false;
 
+//Flag notif
+bool notifSuhu = false;
+bool notifPH = false;
+bool notifNutrisi = false;
+bool notifAir = false;
+
 //Variabel string untuk menyimpan data serial
 String incomingData = "";
 float temperature = 0.0;
@@ -98,6 +104,7 @@ void loop() {
     prevT = currT;
   }
 
+  sendNotif();
 
   yield();  //Sama seperti delay(1) namun tidak menyebabkan blocking, bertujuan untuk menyediakan "nafas" untuk ESP8266
 }
