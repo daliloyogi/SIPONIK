@@ -81,7 +81,7 @@ void loop() {
     timepoint = millis();
 
     ultrasonic();  // Data Ketinggian Air (%)
-    dallas();      // Data Suhu Air (Celcius)
+    float SuhuAir = dallas();      // Data Suhu Air (Celcius)
     TDS();         // Data Nutrisi (ppm)
     PH();          // Data Index PH
 
