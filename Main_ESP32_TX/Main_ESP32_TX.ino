@@ -20,8 +20,7 @@
 #define SOUND_SPEED 0.034
 
 DFRobot_PH ph;
-OneWire oneWire(DS18B2_PIN);
-DallasTemperature sensors(&oneWire);
+OneWire ds(DS18B2_PIN);
 LiquidCrystal_I2C lcd(0x27, 20, 4);  // I2C default address 0x27, or 0x3F
 
 float voltage, pH;
@@ -68,7 +67,6 @@ void setup() {
   EEPROM.begin(512);
   analogReadResolution(12);
   ph.begin();
-  sensors.begin();
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, OUTPUT);
   pinMode(SELENOID, OUTPUT);
