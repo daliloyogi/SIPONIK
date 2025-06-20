@@ -4,6 +4,8 @@
 #include <Wire.h>
 #include <DallasTemperature.h>
 #include <LiquidCrystal_I2C.h>
+#include <WiFi.h>
+#include <esp_now.h>
 
 // UART1 ESP32
 #define UART1_TX 17
@@ -29,6 +31,7 @@ long duration;
 float KetinggianAir, distanceCm;
 float SuhuAir = 0.0;
 float depthCm = 100.0;  // Ganti dengan kedalaman kolam (cm)
+float suhuRuang = 0.0;
 
 /*
 variabel Sensor :
@@ -60,6 +63,12 @@ byte Degree[8] = {
   0b00000
 };
 
+typedef struct struct_message {
+  float temperature;
+} struct_message;
+
+struct_message incomingData;
+
 void setup() {
   Serial.begin(115200);
   Serial1.begin(115200, SERIAL_8N1, UART1_RX, UART1_TX);
@@ -72,6 +81,14 @@ void setup() {
   pinMode(SELENOID, OUTPUT);
   digitalWrite(SELENOID, LOW);
 
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("ESP-NOW init failed!");
+    return;
+  }
+  esp_now_register_recv_cb(OnDataRecv);
+
   IntroDisplay();
 }
 
@@ -81,7 +98,7 @@ void loop() {
     timepoint = millis();
 
     ultrasonic();  // Data Ketinggian Air (%)
-    float SuhuAir = dallas();      // Data Suhu Air (Celcius)
+    dallas();      // Data Suhu Air (Celcius)
     TDS();         // Data Nutrisi (ppm)
     PH();          // Data Index PH
 
@@ -91,7 +108,7 @@ void loop() {
     }
 
     // Format as comma-separated string (CSV)
-    String data = String(pH, 1) + "," + String(Nutrisi) + "," + String(KetinggianAir) + "," + String(SuhuAir, 1);
+    String data = String(pH, 1) + "," + String(Nutrisi) + "," + String(KetinggianAir) + "," + String(SuhuAir, 1) + "," + String(suhuRuang);
     Serial1.println(data);            // Send to ESP8266 via UART1
     Serial.println("Sent: " + data);  // Debug output
 
